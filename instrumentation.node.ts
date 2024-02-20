@@ -7,7 +7,6 @@ import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions"
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import config from "./package.json";
 import "./web-vitals-instrumentation";
-import { WebVitalsInstrumentation } from "./web-vitals-instrumentation";
 
 const sdk = new NodeSDK({
   resource: new Resource({
@@ -19,12 +18,10 @@ const sdk = new NodeSDK({
   }),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
-      url: "http://127.0.0.1:4318/v1/metrics", // url is optional and can be omitted - default is http://localhost:4318/v1/metrics
-      headers: {}, // an optional object containing custom headers to be sent with each request
+      url: "http://127.0.0.1:4318/v1/metrics",
     }),
   }),
   instrumentations: [
-    new WebVitalsInstrumentation(),
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-fs": { enabled: false },
     }),
