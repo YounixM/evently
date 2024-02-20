@@ -14,7 +14,7 @@ const Footer = () => {
           />
         </Link>
 
-        <p>2023 Signoz. All Rights reserved.</p>
+        <p>2024 Signoz. All Rights reserved.</p>
       </div>
     </footer>
   );
