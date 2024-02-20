@@ -13,7 +13,9 @@
     "@hookform/resolvers": "^3.3.2",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/auto-instrumentations-node": "^0.41.1",
+    "@opentelemetry/context-zone": "^1.21.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.48.0",
+    "@opentelemetry/instrumentation": "^0.48.0",
     "@opentelemetry/resources": "^1.21.0",
     "@opentelemetry/sdk-node": "^0.48.0",
     "@opentelemetry/sdk-trace-node": "^1.21.0",
@@ -44,6 +46,7 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^6.0.4",
+    "web-vitals": "^3.5.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
