@@ -4,9 +4,10 @@ import { CreateCategoryParams } from "@/types";
 import { handleError } from "../utils";
 import { connectToDatabase } from "../database";
 import Category from "../database/models/category.model";
-import { trace } from "@opentelemetry/api";
+import { metrics, trace } from "@opentelemetry/api";
 
 const tracer = trace.getTracer("categoryActions");
+const meter = metrics.getMeter("getCategoriesAPICount");
 
 export const createCategory = async ({
   categoryName,
@@ -34,6 +35,7 @@ export const createCategory = async ({
 };
 
 export const getAllCategories = async () => {
+  const counter = meter.createCounter("getAllCategories");
   return tracer.startActiveSpan(
     "categoryAction:getAllCategories",
     async (span) => {
@@ -42,13 +44,14 @@ export const getAllCategories = async () => {
 
         const categories = await Category.find();
 
-        span.setAttribute("fetchedCategories", "categories fetched from DB");
+        span.setAttribute("fetchedCategories", "i fetched values here");
 
         return JSON.parse(JSON.stringify(categories));
       } catch (error) {
         span.recordException(String(error));
         handleError(error);
       } finally {
+        counter.add(1);
         span.end();
       }
     }
