@@ -1,30 +1,50 @@
-"use server"
+"use server";
 
-import { CreateCategoryParams } from "@/types"
-import { handleError } from "../utils"
-import { connectToDatabase } from "../database"
-import Category from "../database/models/category.model"
+import { CreateCategoryParams } from "@/types";
+import { handleError } from "../utils";
+import { connectToDatabase } from "../database";
+import Category from "../database/models/category.model";
+import { trace } from "@opentelemetry/api";
 
-export const createCategory = async ({ categoryName }: CreateCategoryParams) => {
-  try {
-    await connectToDatabase();
+const tracer = trace.getTracer("categoryActions");
 
-    const newCategory = await Category.create({ name: categoryName });
+export const createCategory = async ({
+  categoryName,
+}: CreateCategoryParams) => {
+  tracer.startActiveSpan("categoryActions:createCategory", async (span) => {
+    try {
+      await connectToDatabase();
 
-    return JSON.parse(JSON.stringify(newCategory));
-  } catch (error) {
-    handleError(error)
-  }
-}
+      const newCategory = await Category.create({ name: categoryName });
+
+      span.setAttribute("categoryName", categoryName);
+
+      return JSON.parse(JSON.stringify(newCategory));
+    } catch (error) {
+      span.setAttribute("createCategoryException", "something went wrong");
+      span.recordException(String(error));
+      handleError(error);
+    } finally {
+      span.end();
+    }
+  });
+};
 
 export const getAllCategories = async () => {
-  try {
-    await connectToDatabase();
+  tracer.startActiveSpan("categoryAction:getAllCategories", async (span) => {
+    try {
+      await connectToDatabase();
 
-    const categories = await Category.find();
+      const categories = await Category.find();
 
-    return JSON.parse(JSON.stringify(categories));
-  } catch (error) {
-    handleError(error)
-  }
-}
+      span.setAttribute("fetchedCategories", "categories fetched from DB");
+
+      return JSON.parse(JSON.stringify(categories));
+    } catch (error) {
+      span.recordException(String(error));
+      handleError(error);
+    } finally {
+      span.end();
+    }
+  });
+};
